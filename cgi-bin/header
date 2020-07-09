@@ -22,6 +22,7 @@ echo "<!DOCTYPE html>
   <title>FINDER</title>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel="icon" href="http://$HTTP_HOST/html/favicon.png"  type="image/icon type">
   <link rel='stylesheet' href='http://$HTTP_HOST/html/css/bootstrap.min.css'>
   <link rel='stylesheet' href='http://$HTTP_HOST/html/css/font-awesome.css'>
   <link rel='stylesheet' href='http://$HTTP_HOST/html/css/font-awesome.min.css'>
