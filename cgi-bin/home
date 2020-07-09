@@ -3,7 +3,7 @@
 source /www/cgi-bin/header # add header
 
 
-FECHA=$(date '+%d/%m/%y')
+FECHA=$(date '+%m/%d/%y')
 
 
 read_all(){
