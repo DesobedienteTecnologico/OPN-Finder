@@ -1,0 +1,165 @@
+#!/bin/sh
+
+source /www/cgi-bin/header # add header
+
+PRINT='none'
+
+urldecode() {
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
+
+parse_string() {
+# Parse string to prevent OS code injections
+# remove \ ' # ; % < > & | $ ^ ` " \ chars
+local parsed=${1//[\'#;%<>&|$^\`\"\\]/}
+echo $parsed
+}
+
+get_form_values(){
+if [ "$REQUEST_METHOD" == "POST" ]; then
+  read -n $CONTENT_LENGTH post_data
+  while [ ! -z "$post_data" ]; do
+  part=${post_data%%&*}
+  key=${part%%=*}
+  value=${part#$key=}
+  post_data=${post_data#$part}
+  post_data=${post_data#&}
+  value=$(urldecode $value)
+  value=$(parse_string "$value")
+ case $key in
+    guardar)
+      GUARDAR=$value
+      ;;
+    buscarid)
+      BUSCARID=$value
+      ;;
+    buscarfecha)
+      BUSCARFECHA=$value
+      BUSCARFECHABIEN=$(echo $BUSCARFECHA | awk -F "-" '{ print $3, $2, $1 }' | sed 's/ /\//g' | cut -c 1-6,9-10)
+      ;;
+    *)
+      ;;
+    esac
+    done
+fi
+}
+
+get_form_values
+
+if [ $BUSCARID -n ]; then #Si $BUSCARID está vacío entonces:
+IDSTRG=""
+AND_STRING=""
+  if [ $BUSCARFECHA -n ]; then
+    AND_STRING=""
+    FECHA_SQLITE=""
+  else
+    AND_STRING=""
+    FECHA_SQLITE="fecha='$BUSCARFECHABIEN'"
+    PRINT='true'
+  fi
+else #Si $BUSCARID NO está vacío entonces:
+IDSTRG="id='$BUSCARID'"
+PRINT='true'
+  if [ $BUSCARFECHA -n ]; then
+    AND_STRING=""
+    FECHA_SQLITE=""
+  else
+    AND_STRING="AND"
+    FECHA_SQLITE="fecha='$BUSCARFECHABIEN'"
+    PRINT='true'
+  fi
+fi
+
+
+echo "
+
+<style>
+@media print {
+  body > * {
+    display:none;
+  }
+
+  body > #controlacceso {
+    display:block;
+  }
+}
+</style>
+
+
+<hr>
+<div id='noprint' class='container'>
+  <h2><i class='fa fa-filter'></i> Filtrar controles de acceso</h2>
+  <p>Puedes filtrar: [ ID ], [ ID y Fecha ] ó [ Fecha ].</p>
+  <form class='form-inline my-2 my-lg-0' action='control' method='POST'>
+    <input class='form-control mr-sm-2' type='search' id='buscarid' name='buscarid' placeholder='ID' aria-label='Buscar ID'>
+    <input class='form-control mr-sm-2' type='date' id='buscarfecha' name='buscarfecha' placeholder='Fecha: dd/mm/aa' aria-label='Buscar FECHA'>
+    <button name='guardar' value='guardar' class='btn btn-outline-dark my-2 my-sm-0' type='submit' ><i class='fa fa-search'></i> Filtrar</button>
+    &nbsp;&nbsp;<button style='display: $PRINT;' class='btn btn-outline-primary my-2 my-sm-0' ><i class='fa fa-print'></i><a href='javascript:window.print();'> Imprimir</a></button>
+  </form>
+</div>
+
+
+
+<hr>
+
+
+<div class='container' id='controlacceso'>
+  <h2><i class='fa fa-address-book'></i> Controles de acceso</h2>
+  <p>Refrescar para actualizar los accesos.</p>
+  <table class='table table-striped'>
+    <thead>
+      <tr>
+        <th><i class='fa fa-id-card'></i> ID</th>
+        <th><i class='fa fa-user'></i> Nombre</th>
+        <th><i class='fa fa-calendar'></i> FECHA</th>
+        <th><i class='fa fa-hourglass'></i> HORA</th>
+      <!--  <th><i class='fa fa-wrench'></i></th> -->
+      </tr>
+    </thead>
+    <tbody>
+"
+
+if [ $GUARDAR -n ] ; then
+  echo ""
+else
+  read_all(){
+  sqlite3 /root/control.db "SELECT * FROM horarios WHERE $IDSTRG $AND_STRING $FECHA_SQLITE;" > /tmp/horarios.txt
+    INPUT="/tmp/horarios.txt"
+    COUNTER=1
+    OLDIFS=$IFS
+    IFS="|"
+    while read key id fecha hora
+     do
+      if [ "$id" ]; then
+        NOMBRESX=$(sqlite3 /root/control.db -line "SELECT * FROM usuarios WHERE id='$id'" | grep nombre | awk '{ print $3 }')
+       echo "
+             <tr>
+               <td>$id</td>
+               <td>$NOMBRESX</td>
+               <td>$fecha</td>
+               <td>$hora</td>
+        <!--   <td><i class='fa fa-trash'></i>&nbsp;&nbsp;<i class='fa fa-pencil'></i></td> -->
+             </tr>
+       "
+        COUNTER=$(( $COUNTER + 1 ))
+      fi
+    done < $INPUT
+    IFS=$OLDIFS
+    rm /tmp/horarios.txt #Remove file
+  }
+fi
+read_all
+
+
+
+"
+    </tbody>
+  </table>
+  </div>
+</body>
+"
+#source /www/cgi-bin/footer
+"
+</html>
+"

@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# Include global configuration file
+source /www/cgi-bin/lang/es.txt
+
+echo "Content-Type: text/html"
+echo ""
+
+verify_session()
+{
+if ! grep $HTTP_COOKIE /tmp/session > /dev/null;then
+         echo "<meta http-equiv='refresh' content='1;url=http://$HTTP_HOST/cgi-bin/login'/>"
+         exit
+fi
+}
+
+verify_session
+
+echo "<!DOCTYPE html>
+<html lang='es'>
+<head>
+  <title>FINDER</title>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel='stylesheet' href='http://$HTTP_HOST/html/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='http://$HTTP_HOST/html/css/font-awesome.css'>
+  <link rel='stylesheet' href='http://$HTTP_HOST/html/css/font-awesome.min.css'>
+
+
+
+  <script type='text/javascript' src='http://$HTTP_HOST/html/js/jquery-3.3.1.slim.min.js'></script>
+  <script type='text/javascript' src='http://$HTTP_HOST/html/js/bootstrap.min.js'></script>
+
+</head>
+<body>
+
+<nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
+  <a class='navbar-brand' href='http://$HTTP_HOST/cgi-bin/home'>OPNfinder </a>
+  <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+    <span class='navbar-toggler-icon'></span>
+  </button>
+
+  <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+    <ul class='navbar-nav mr-auto'>
+      <li class='nav-item active'>
+        <a class='nav-link' href='http://$HTTP_HOST/cgi-bin/home'><i class='fa fa-home'></i> $M1<span class='sr-only'>(current)</span></a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='http://$HTTP_HOST/cgi-bin/home'>   </a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='http://$HTTP_HOST/cgi-bin/addentry'><i class='fa fa-user-plus'></i> $M2 </a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='http://$HTTP_HOST/cgi-bin/control'><i class='fa fa-filter'></i> $M3 </a>
+      </li>
+      <li class='nav-item active dropdown'>
+        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+            <i class='fa fa-th'></i> $M4
+	</a>
+        <div class='dropdown-menu' aria-labelledby='navbarDropdown'>
+          <a class='dropdown-item' href='#'><i class='fa fa-book'></i>&nbsp;&nbsp;$M4_1</a>
+          <a class='dropdown-item' href='#'><i class='fa fa-list-ol'></i>&nbsp;&nbsp;$M4_2</a>
+          <div class='dropdown-divider'></div>
+          <a class='dropdown-item' href='#'><i class='fa fa-wrench'></i>&nbsp;&nbsp;$M4_3</a>
+        </div>
+      </li>
+    </ul>
+    <form class='form-inline my-2 my-lg-0' action='search' method='POST'>
+      <input class='form-control mr-sm-2' type='search' name='buscar' placeholder='$M5_TXT' aria-label='Buscar Usuario'>
+      <button class='btn btn-outline-success my-2 my-sm-0' type='submit'>$M5_BTN</button>
+    </form>
+  </div>
+</nav>
+"

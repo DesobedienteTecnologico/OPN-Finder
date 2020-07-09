@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo "
+<!-- Footer -->
+<footer class='page-footer font-small blue'>
+
+  <!-- Copyright -->
+  <div class='footer-copyright text-center py-3'>© 2020 Copyleft:
+    <a href='http://www.desobedientetecnologico.com/'>OPN-Finder</a>
+  </div>
+  <!-- Copyright -->
+"
+date '+Fecha: %m/%d/%y%nHora: %H:%M:%S'
+"
+</footer>
+<!-- Footer -->
+"
