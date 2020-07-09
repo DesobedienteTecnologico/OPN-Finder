@@ -16,6 +16,11 @@
 |----------|:-------------:|----------|
 | 6417781007250 |  User1 |<a href="https://www.barcodesinc.com/generator/image.php?code=6417781007250&style=197&type=C128B&width=219&height=50&xres=1&font=3">Show<a/>|     
 | 6415712502454 |    User2   |<a href="https://www.barcodesinc.com/generator/image.php?code=6415712502454&style=197&type=C128B&width=219&height=50&xres=1&font=3">Show<a/>|
+<br><br>
+<h2>Script to install directly from the device</h2>
+
+
+
 
 
 <br><br>
