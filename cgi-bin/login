@@ -1,0 +1,116 @@
+#!/bin/sh
+
+
+html_form(){
+echo "Content-Type: text/html"
+echo ""
+
+echo "
+<head>
+  <title>LOGIN | FINDER</title>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel='stylesheet' href='http://$HTTP_HOST/html/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='http://$HTTP_HOST/html/css/font-awesome.css'>
+  <link rel='stylesheet' href='http://$HTTP_HOST/html/css/font-awesome.min.css'>
+
+  <script type='text/javascript' src='http://$HTTP_HOST/html/js/jquery-3.3.1.slim.min.js'></script>
+  <script type='text/javascript' src='http://$HTTP_HOST/html/js/bootstrap.min.js'></script>
+
+</head>
+
+
+<style type='text/css'>
+	.login-form {
+		width: 340px;
+    	margin: 50px auto;
+	}
+    .login-form form {
+    	margin-bottom: 15px;
+        background: #f7f7f7;
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+    }
+    .login-form h2 {
+        margin: 0 0 15px;
+    }
+    .form-control, .btn {
+        min-height: 38px;
+        border-radius: 2px;
+    }
+    .btn {
+        font-size: 15px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<div class='login-form'>
+    <form action='login' method='post'>
+        <h2 class='text-center'><i class='fa fa-user-circle-o'></i> Log in FINDER</h2>
+        <div class='form-group'>
+            <input type='text' class='form-control' name='username' placeholder='Username' required='required'>
+        </div>
+        <div class='form-group'>
+            <input type='password' class='form-control' name='password' placeholder='Password' required='required'>
+        </div>
+        <div class='form-group'>
+            <button type='submit' class='btn btn-primary btn-block'>Log in</button>
+        </div>
+        $USERNAME
+"
+show_warning
+"
+    </form>
+</div>
+</body>
+
+
+
+"
+
+}
+
+verify_password(){
+  PASS=$(sqlite3 /root/control.db "SELECT pass FROM login WHERE usuario='$USERNAME'")
+  PASSWORD=$(echo $PASS | openssl enc -aes-128-cbc -a -d -salt -pass pass:DT1234)
+
+  if [ "$key" == "username" ]; then
+    USERNAME=$value
+  fi
+if [ "$key" == "password" ]; then
+  if [ "$value" == "$PASSWORD" ]; then
+    acepted="true"
+  fi
+else
+  show_warning(){
+    echo "
+  <div class='alert alert-danger'>
+      <strong>Error!</strong> Los datos introducidos no son validos.
+   </div>
+   "
+ }
+fi
+}
+
+if [ "$REQUEST_METHOD" == "POST" ]; then
+    read -n $CONTENT_LENGTH post_data
+    while [ ! -z "$post_data" ]; do
+        part=${post_data%%&*}
+        key=${part%%=*}
+        value=${part#$key=}
+        post_data=${post_data#$part}
+        post_data=${post_data#&}
+        verify_password
+    done
+fi
+if [ "$acepted" == "true" ]; then
+  SESSIONID=`(cat /dev/urandom | tr -dc '0123456789' | head -c 14) 2>/dev/null`
+  echo "$SESSIONID" >/tmp/session
+  echo "Content-Type: text/html"
+  echo "Set-cookie: $SESSIONID; expires=Thursday, 01-Jan-48 12:00:00 GMT"
+  echo ""
+  echo "<meta http-equiv='refresh' content='1;url=http://$HTTP_HOST/cgi-bin/home'/>"
+else
+  html_form
+fi

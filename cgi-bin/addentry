@@ -1,0 +1,102 @@
+#!/bin/sh
+
+
+source /www/cgi-bin/header # add header
+
+urldecode() {
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
+
+parse_string() {
+# Parse string to prevent OS code injections
+# remove \ ' # ; % < > & | $ ^ ` " \ chars
+local parsed=${1//[\'#;%<>&|$^\`\"\\]/}
+echo $parsed
+}
+
+get_form_values(){
+if [ "$REQUEST_METHOD" == "POST" ]; then
+  read -n $CONTENT_LENGTH post_data
+  while [ ! -z "$post_data" ]; do
+  part=${post_data%%&*}
+  key=${part%%=*}
+  value=${part#$key=}
+  post_data=${post_data#$part}
+  post_data=${post_data#&}
+  value=$(urldecode $value)
+  value=$(parse_string "$value")
+ case $key in
+    save)
+      SAVE=$value
+      ;;
+    inputid)
+      inputID=$value
+      ;;
+    inputnombre)
+      inputNOMBRE=$value
+      ;;
+    inputdni)
+      inputDNI=$value
+      ;;
+    *)
+      ;;
+    esac
+    done
+fi
+}
+
+get_form_values
+
+if [ "$SAVE" ] ; then # Si se ha pulsado Guardar, entonces guardará
+sqlite_ask=$(sqlite3 /root/control.db "SELECT * FROM usuarios WHERE id=$inputID;")
+  if [ $sqlite_ask -n ]; then
+    sqlite3 /root/control.db "INSERT INTO usuarios (id, nombre, dni) VALUES ('$inputID', '$inputNOMBRE', '$inputDNI');"
+    echo "Datos añadidos correctamente en la Base de datos!"
+    else
+      echo "El ID está en la Base de Datos, no es posible volver a crear una misma ID"
+  fi
+fi
+
+
+echo "
+
+<hr>
+
+<div class='container'>
+<h4>Añadir Usuarios a la base de datos  |  OPNfinder</h4><br>
+<form action='addentry' method='POST'>
+  <div class='form-group row'>
+    <label for='inputid' class='col-sm-2 col-form-label'>ID</label>
+    <div class='col-sm-10'>
+        <input type='text' class='form-control' name='inputid' placeholder='ID (max 13)' required='required' pattern='[A-Za-z0-9]{1,13}'>
+    </div>
+  </div>
+  <div class='form-group row'>
+    <label for='inputnombre' class='col-sm-2 col-form-label'>Nombre Completo</label>
+    <div class='col-sm-10'>
+      <input type='text' class='form-control' name='inputnombre' placeholder='Nombre (max 20)' required='required' pattern='[A-Za-z0-9]{1,20}'>
+    </div>
+  </div>
+  <div class='form-group row'>
+    <label for='inputdni' class='col-sm-2 col-form-label'>nº DNI</label>
+    <div class='col-sm-10'>
+        <input type='text' class='form-control' name='inputdni' placeholder='DNI (max 10)' required='required' pattern='[A-Za-z0-9]{1,10}'>
+    </div>
+  </div>
+  <div class='form-group row'>
+    <div class='col-sm-10'>
+      <button name='save' value="guardar" type='submit' class='btn btn-primary'>Añadir usuario</button>
+    </div>
+  </div>
+</form>
+</div>
+
+
+
+</body>
+"
+#source /www/cgi-bin/footer
+"
+</html>
+"

@@ -1,0 +1,99 @@
+#!/bin/sh
+
+source /www/cgi-bin/header # add header
+
+urldecode() {
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
+
+parse_string() {
+# Parse string to prevent OS code injections
+# remove \ ' # ; % < > & | $ ^ ` " \ chars
+local parsed=${1//[\'#;%<>&|$^\`\"\\]/}
+echo $parsed
+}
+
+get_form_values(){
+if [ "$REQUEST_METHOD" == "POST" ]; then
+  read -n $CONTENT_LENGTH post_data
+  while [ ! -z "$post_data" ]; do
+  part=${post_data%%&*}
+  key=${part%%=*}
+  value=${part#$key=}
+  post_data=${post_data#$part}
+  post_data=${post_data#&}
+  value=$(urldecode $value)
+  value=$(parse_string "$value")
+ case $key in
+    buscar)
+      BUSCAR=$value
+      ;;
+    *)
+      ;;
+    esac
+    done
+fi
+}
+
+get_form_values
+
+#BUSQUEDA=$(sqlite3 /root/control.db "SELECT * FROM usuarios WHERE id=$BUSCAR";)
+
+
+
+read_id(){
+sqlite3 /root/control.db "SELECT * FROM usuarios WHERE id=$BUSCAR;" > /tmp/search.txt
+  INPUT="/tmp/search.txt"
+  COUNTER=1
+  OLDIFS=$IFS
+  IFS="|"
+  while read key id nombre dni
+   do
+    if [ "$id" ]; then
+     echo "
+           <tr>
+             <td>$key</td>
+             <td>$id</td>
+             <td>$nombre</td>
+             <td>$dni</td>
+           </tr>
+     "
+      COUNTER=$(( $COUNTER + 1 ))
+    fi
+  done < $INPUT
+  IFS=$OLDIFS
+  rm /tmp/search.txt #Remove file
+}
+
+
+echo "
+<hr>
+<div class='container'>
+  <h2>Controles de acceso</h2>
+  <p>Refrescar para actualizar los accesos.</p>
+  <table class='table table-striped'>
+    <thead>
+      <tr>
+        <th><i class='fa fa-key'></i> DB KEY</th>
+        <th><i class='fa fa-id-badge'></i> ID</th>
+        <th><i class='fa fa-user'></i> Nombre</th>
+        <th><i class='fa fa-id-card'></i> DNI</th>
+      </tr>
+    </thead>
+    <tbody>
+"
+read_id
+"
+    </tbody>
+  </table>
+</div>
+"
+date '+DATE: %m/%d/%y%nTIME: %H:%M:%S'
+"
+</body>
+"
+#source /www/cgi-bin/footer
+"
+</html>
+"

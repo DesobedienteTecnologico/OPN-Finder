@@ -1,0 +1,62 @@
+#!/bin/sh
+
+source /www/cgi-bin/header # add header
+
+
+FECHA=$(date '+%d/%m/%y')
+
+
+read_all(){
+sqlite3 /root/control.db "SELECT * FROM horarios WHERE fecha='$FECHA';" > /tmp/horarios.txt
+
+  INPUT="/tmp/horarios.txt"
+  COUNTER=1
+  OLDIFS=$IFS
+  IFS="|"
+  while read key id fecha hora
+   do
+    if [ "$id" ]; then
+      NOMBRESX=$(sqlite3 /root/control.db -line "SELECT * FROM usuarios WHERE id='$id'" | grep nombre | awk '{ print $3 }')
+     echo "
+           <tr>
+             <td>$id</td>
+             <td>$NOMBRESX</td>
+             <td>$fecha</td>
+             <td>$hora</td>
+           </tr>
+     "
+      COUNTER=$(( $COUNTER + 1 ))
+    fi
+  done < $INPUT
+  IFS=$OLDIFS
+  rm /tmp/horarios.txt #Remove file
+}
+
+echo "
+<hr>
+<div class='container'>
+  <h2><i class='fa fa-address-book-o'></i> Controles de acceso hoy [$FECHA] </h2>
+  <p>Refrescar para actualizar los accesos.</p>
+  <table class='table table-striped'>
+    <thead>
+      <tr>
+        <th><i class='fa fa-id-card-o'></i> ID</th>
+        <th><i class='fa fa-user'></i> NOMBRE</th>
+        <th><i class='fa fa-calendar'></i> FECHA</th>
+        <th><i class='fa fa-clock-o'></i> HORA</th>
+      </tr>
+    </thead>
+    <tbody>
+
+"
+read_all
+"
+    </tbody>
+  </table>
+</div>
+</body>
+"
+#source /www/cgi-bin/footer
+"
+</html>
+"
