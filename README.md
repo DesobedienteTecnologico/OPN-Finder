@@ -1,6 +1,7 @@
 # OPN-Finder
 
 
+
 <img src="image.jpg" alt="drawing" width="400"/>
 
 
@@ -16,16 +17,23 @@
 |----------|:-------------:|----------|
 | 6417781007250 |  User1 |<a href="https://www.barcodesinc.com/generator/image.php?code=6417781007250&style=197&type=C128B&width=219&height=50&xres=1&font=3">Show<a/>|     
 | 6415712502454 |    User2   |<a href="https://www.barcodesinc.com/generator/image.php?code=6415712502454&style=197&type=C128B&width=219&height=50&xres=1&font=3">Show<a/>|
+
 <br><br>
 <h2>Tips:</h2>
-1º Change device Timezone if not correct
-2º Manage to start lector.sh with the system (you can use cron)
-3º Change admin password
+
+- Change device Timezone if not correct
+
+- Manage to start lector.sh with the system (you can use cron)
+
+- Change admin password
+
 
 <br><br>
 <h2>Creating admin password</h2>
-1º echo superpassword | openssl enc -pbkdf2 -a -salt -pass pass:DT1234
-2º sqlite3 control.db "UPDATE login SET pass = 'c3VwZXJwYXNzd29yZAo=' WHERE usuario = 'admin'"
+
+- echo superpassword | openssl enc -pbkdf2 -a -salt -pass pass:DT1234
+
+- sqlite3 control.db "UPDATE login SET pass = 'c3VwZXJwYXNzd29yZAo=' WHERE usuario = 'admin'"
 
 <br><br>
 <h2>Script to install directly from the device</h2>
