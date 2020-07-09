@@ -73,7 +73,7 @@ show_warning
 
 verify_password(){
   PASS=$(sqlite3 /root/control.db "SELECT pass FROM login WHERE usuario='$USERNAME'")
-  PASSWORD=$(echo $PASS | openssl enc -aes-128-cbc -a -d -salt -pass pass:DT1234)
+  PASSWORD=$(echo $PASS | openssl enc -pbkdf2 -a -d -salt -pass pass:DT1234)
 
   if [ "$key" == "username" ]; then
     USERNAME=$value
