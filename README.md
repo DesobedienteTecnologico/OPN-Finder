@@ -37,8 +37,8 @@
 <br><br>
 <h2>Script to install OPN-Finder directly from the device (Copy all, make it executable and run!)</h2>
 
+<pre>
 <code>
-
 #!/bin/ash
 
 clear
@@ -55,8 +55,8 @@ echo "Moving directories"
 cd opn-finder ; rm image.jpg README.md
 mv html /www/ ; mv root/* /root/ ; mv cgi-bin/* /www/cgi-bin/
 echo "Done. Enjoy!"
-
 </code>
+</pre>
 
 
 
