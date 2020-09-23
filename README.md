@@ -10,7 +10,7 @@
 [EN] Control of entry and exit through a barcode reader.
 
 #### Example video:
-[![Example video](https://cdn4.telesco.pe/file/bJkbf8cNwYg_a59mZ655Cxxwr6CLinxo58ALVqwoa9f_06nzCZjKnJqbAcFzcTSegLFbcUoKqGl56saZvwsIK7bpWNlMyvaZ01Gp_vVFkcGjrr83ZuklCqTMUU7gTe8Xtdz400rv96d9edIGTr6r9ta6UUOLOjouiKNwlmiMF2r4sasvgscENrYxkjbkc0NaJYPrORY19avknpEYo0OaIrBKPBQM5ZuRE8lFIsOeB5Nt8DlOM-7ATxBkeJ84tTJKOKOqHgPTtkjaFyN0FkHkLL4ppr2iPrhAwsyVwaWXWPYyUaSkvuIUSVwLT4wnpUsD4bnhTBcILTJAvGfcJcX7YQ)](https://cdn4.telesco.pe/file/70bde007b2.mp4?token=D7ceO8q70Ishj2GhXj9ovGtkIvi5831AsW6Uq0jI3nPoUh1FMHjjZdEnhWIDagMkPI8u-0Me9TItjFkqkgSaThegdm7igbZ13ATN0XxPdd-glkcft5Otlf1TnEGu2I0Ev0wL204464nvltAoC6yICy0Vmk2olPUpmRsw4PyA1eCxuEMJD7p4evEoqW8vgnSGA8xDdriXuawJEGNBxqMrXtzSYX_sqc0xwkELz-o0NZkxG9fPzow5e-F3AVD0CUVczz8IlaPDX7G_IQ8KbLjIHkK4ODTUawT1qwvlrU1jUPKAiBtFV-vh8SpnimC0Hln3y0BxK8bU1332TzNA2a_37Q)
+<a href='http://t.me/openwrt_linux/1357'>Video</a>
 <br><br>
 <h2>Test tickets</h2>
 
