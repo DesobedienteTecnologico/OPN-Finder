@@ -43,7 +43,7 @@
 
 clear
 echo "We need to type root password to update system and install the packages!"
-opkg update && opkg installgit-http
+opkg update && opkg install git-http
 echo "Updating system and installing packages..."
 echo "Clone from git"
 git clone https://github.com/DesobedienteTecnologico/OPN-Finder.git
